@@ -54,10 +54,15 @@ Everything is still untested on real hardware — see the checklist below.
 
 ## Building
 
+> **Note:** the folder name must match `PRODUCT_DEVICE` (`RMX3933`), because the build
+> system locates `BoardConfig.mk` through `device/*/RMX3933/BoardConfig.mk`. All paths
+> inside the tree are relative (`$(call my-dir)` / `$(TARGET_DEVICE_DIR)`), so any
+> vendor folder works.
+
 Copy the tree into your TWRP source:
 
 ```bash
-cp -r recovery_device_realme_RMX3933 <twrp-source>/device/realme/ussi_arm64
+cp -r recovery_device_realme_RMX3933 <twrp-source>/device/realme/RMX3933
 cd <twrp-source>
 source build/envsetup.sh
 lunch twrp_RMX3933-eng
@@ -101,12 +106,12 @@ reuses the stock header verbatim (only `vendor_ramdisk_size` is patched) and reb
 `header | ramdisk | dtb | unisoc info | bootconfig` exactly like the stock image.
 
 ```bash
-python3 device/realme/ussi_arm64/tools/repack_vendorboot.py \
+python3 device/realme/RMX3933/tools/repack_vendorboot.py \
     out/target/product/RMX3933/vendor_boot.img \
     out/target/product/RMX3933/vendor_boot_repacked.img \
-    --header device/realme/ussi_arm64/prebuilt/vendor_boot_header.bin \
-    --dtb    device/realme/ussi_arm64/prebuilt/dtb.img \
-    --bootconfig device/realme/ussi_arm64/bootconfig \
+    --header device/realme/RMX3933/prebuilt/vendor_boot_header.bin \
+    --dtb    device/realme/RMX3933/prebuilt/dtb.img \
+    --bootconfig device/realme/RMX3933/bootconfig \
     --partition-size 104857600
 ```
 

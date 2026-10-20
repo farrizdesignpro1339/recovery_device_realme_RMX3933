@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-DEVICE_PATH := device/realme/ussi_arm64
+DEVICE_PATH := $(TARGET_DEVICE_DIR)
 
 # For building with minimal manifest
 ALLOW_MISSING_DEPENDENCIES := true

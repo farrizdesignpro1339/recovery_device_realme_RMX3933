@@ -15,8 +15,10 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/gsi_keys.mk)
 # Inherit some common TWRP stuff.
 $(call inherit-product, vendor/twrp/config/common.mk)
 
-# Inherit from ussi_arm64 device
-$(call inherit-product, device/realme/ussi_arm64/device.mk)
+# Inherit from the device tree (path agnostic, works in any folder name)
+LOCAL_PATH := $(call my-dir)
+
+$(call inherit-product, $(LOCAL_PATH)/device.mk)
 
 PRODUCT_DEVICE := RMX3933
 PRODUCT_NAME := twrp_RMX3933
