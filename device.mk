@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-LOCAL_PATH := $(call my-dir)
+# LOCAL_PATH is set by the build system to the directory of this makefile
 
 # A/B
 AB_OTA_POSTINSTALL_CONFIG += \

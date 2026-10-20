@@ -15,10 +15,22 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/gsi_keys.mk)
 # Inherit some common TWRP stuff.
 $(call inherit-product, vendor/twrp/config/common.mk)
 
-# Inherit from the device tree (path agnostic, works in any folder name)
-LOCAL_PATH := $(call my-dir)
+# Inherit from the device tree.
+# The device tree folder must be named after PRODUCT_DEVICE (RMX3933), the
+# build system looks for device/*/RMX3933/BoardConfig.mk. The path of the tree
+# is resolved here instead of hardcoded so the tree works in any folder:
+#   1) find the tree through the product makefile name
+#   2) fall back to LOCAL_PATH (set by the build system to this file's folder)
+#   3) fall back to the default location
+LOCAL_DEVICE_PATH := $(patsubst %/,%,$(dir $(firstword $(wildcard device/*/RMX3933/twrp_RMX3933.mk))))
+ifeq ($(LOCAL_DEVICE_PATH),)
+LOCAL_DEVICE_PATH := $(LOCAL_PATH)
+endif
+ifeq ($(LOCAL_DEVICE_PATH),)
+LOCAL_DEVICE_PATH := device/realme/RMX3933
+endif
 
-$(call inherit-product, $(LOCAL_PATH)/device.mk)
+$(call inherit-product, $(LOCAL_DEVICE_PATH)/device.mk)
 
 PRODUCT_DEVICE := RMX3933
 PRODUCT_NAME := twrp_RMX3933
