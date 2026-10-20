@@ -173,7 +173,9 @@ TW_INCLUDE_LIBRESETPROP := true
 TW_HAS_MTP := true
 # Load the vendor modules in the same order as the stock recovery
 # (modules.load.recovery from the stock vendor_boot ramdisk)
-TW_LOAD_VENDOR_MODULES := $(shell tr '\n' ' ' < $(DEVICE_PATH)/recovery/root/lib/modules/modules.load.recovery)
+# The list has to be quoted, otherwise the compiler treats the module names as
+# source files ("clang++: error: no such file or directory: 'xxx.ko'").
+TW_LOAD_VENDOR_MODULES := "$(shell tr '\n' ' ' < $(DEVICE_PATH)/recovery/root/lib/modules/modules.load.recovery)"
 
 # EXCLUDE TWRP CONFIG
 TW_EXCLUDE_DEFAULT_USB_INIT := true
