@@ -109,7 +109,7 @@ BOARD_VENDORIMAGE_FILE_SYSTEM_TYPE := erofs
 BOARD_USERDATAIMAGE_FILE_SYSTEM_TYPE := f2fs
 BOARD_SUPER_PARTITION_SIZE := 9126805504 # TODO: check on the exact storage variant
 BOARD_SUPER_PARTITION_GROUPS := realme_dynamic_partitions
-BOARD_REALME_DYNAMIC_PARTITIONS_PARTITION_LIST := system system_ext vendor odm product vendor_dlkm system_dlkm
+BOARD_REALME_DYNAMIC_PARTITIONS_PARTITION_LIST := system system_ext vendor odm product vendor_dlkm
 BOARD_REALME_DYNAMIC_PARTITIONS_SIZE := 9122611200 # TODO: check on the exact storage variant
 
 # Platform
