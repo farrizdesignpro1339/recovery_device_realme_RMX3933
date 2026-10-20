@@ -1,0 +1,77 @@
+# TWRP fstab - realme Note 60 (RMX3933), Unisoc T612 / ums9230_latte
+#
+# format: <device> <mount point> <fs type> <fs options> <twrp flags>
+# sumber: /etc/fstab.ums9230_latte dari vendor partition stock
+#
+# partisi logis (system, vendor, ...) pakai nama partisi sebagai device +
+# flag "logical", TWRP ambil dari super partition lewat fs_mgr.
+# Kolom terakhir = flag TWRP (display=, formattable, slotselect, ...).
+
+# --- boot chain ---
+/dev/block/by-name/boot            /boot          emmc      defaults                                    display=Boot,slotselect
+/dev/block/by-name/init_boot       /init_boot     emmc      defaults                                    display=Init_Boot,slotselect
+/dev/block/by-name/vendor_boot     /vendor_boot   emmc      defaults                                    display=Vendor_Boot,slotselect
+/dev/block/by-name/dtbo            /dtbo          emmc      defaults                                    display=DTBO,slotselect
+/dev/block/by-name/misc            /misc          emmc      defaults                                    display=Misc
+
+# --- bootloader / firmware ---
+/dev/block/mmcblk0boot0            /spl           emmc      defaults                                    display=SPL,slotselect
+/dev/block/mmcblk0boot1            /spl_bk        emmc      defaults                                    display=SPL_Backup
+/dev/block/by-name/uboot           /uboot         emmc      defaults                                    display=Uboot,slotselect
+/dev/block/by-name/sml             /sml           emmc      defaults                                    display=SML,slotselect
+/dev/block/by-name/trustos         /tos           emmc      defaults                                    display=TOS,slotselect
+/dev/block/by-name/teecfg          /teecfg        emmc      defaults                                    display=TeeCfg,slotselect
+/dev/block/by-name/persist         /persist       emmc      defaults                                    display=Persist
+/dev/block/by-name/logo            /logo          emmc      defaults                                    display=Logo
+/dev/block/by-name/fbootlogo       /fbootlogo     emmc      defaults                                    display=Fbootlogo
+/dev/block/by-name/pm_sys          /pm_sys        emmc      defaults                                    display=PMSYS,slotselect
+
+# --- AVB ---
+/dev/block/by-name/vbmeta          /vbmeta        emmc      defaults                                    display=Vbmeta,slotselect
+/dev/block/by-name/vbmeta_system   /vbmeta_system emmc      defaults                                    display=Vbmeta_System,slotselect
+/dev/block/by-name/vbmeta_vendor   /vbmeta_vendor emmc      defaults                                    display=Vbmeta_Vendor,slotselect
+
+# --- modem / DSP ---
+/dev/block/by-name/l_ldsp          /ltedsp        emmc      defaults                                    display=LTEDSP,slotselect
+/dev/block/by-name/l_gdsp          /ltegdsp       emmc      defaults                                    display=LTEGDSP,slotselect
+/dev/block/by-name/l_agdsp         /lteagdsp      emmc      defaults                                    display=LTEAGDSP,slotselect
+/dev/block/by-name/l_cdsp          /ltecdsp       emmc      defaults                                    display=LTECDSP,slotselect
+/dev/block/by-name/l_modem         /ltemodem      emmc      defaults                                    display=LTEMODEM,slotselect
+/dev/block/by-name/l_fixnv         /ltefixnv      emmc      defaults                                    display=LTEFIXNV
+/dev/block/by-name/l_deltanv       /ltedeltanv    emmc      defaults                                    display=LTEDELTANV,slotselect
+/dev/block/by-name/l_runtimenv     /lteruntimenv  emmc      defaults                                    display=LTERUNTIMENV,slotselect
+/dev/block/by-name/wcnmodem        /wcnmodem      emmc      defaults                                    display=WCNMODEM,slotselect
+/dev/block/by-name/gnssmodem       /gnssmodem     emmc      defaults                                    display=GNSSMODEM,slotselect
+
+# --- partisi logis (super) ---
+# flag "logical" bikin TWRP ambil partisi ini dari super partition (fs_mgr)
+system                /system        erofs    ro              wait,avb=vbmeta_system,logical,first_stage_mount,avb_keys=/avb/q-gsi.avbpubkey:/avb/r-gsi.avbpubkey:/avb/s-gsi.avbpubkey,slotselect,display=System
+system                /system        ext4     ro,barrier=1    wait,avb=vbmeta_system,logical,first_stage_mount,avb_keys=/avb/q-gsi.avbpubkey:/avb/r-gsi.avbpubkey:/avb/s-gsi.avbpubkey,slotselect,display=System
+system_ext            /system_ext    erofs    ro              wait,avb=vbmeta_system,logical,first_stage_mount,slotselect,display=System_Ext
+system_ext            /system_ext    ext4     ro,barrier=1    wait,avb=vbmeta_system,logical,first_stage_mount,slotselect,display=System_Ext
+vendor                /vendor        erofs    ro              wait,avb=vbmeta_vendor,logical,first_stage_mount,slotselect,display=Vendor
+vendor                /vendor        ext4     ro,barrier=1    wait,avb=vbmeta_vendor,logical,first_stage_mount,slotselect,display=Vendor
+odm                   /odm           erofs    ro              wait,avb=vbmeta_odm,logical,first_stage_mount,slotselect,display=ODM
+odm                   /odm           ext4     ro,barrier=1    wait,avb=vbmeta_odm,logical,first_stage_mount,slotselect,display=ODM
+product               /product       erofs    ro              wait,avb=vbmeta_product,logical,first_stage_mount,slotselect,display=Product
+product               /product       ext4     ro,barrier=1    wait,avb=vbmeta_product,logical,first_stage_mount,slotselect,display=Product
+vendor_dlkm           /vendor_dlkm   erofs    ro              wait,avb=vbmeta_system_ext,logical,first_stage_mount,slotselect,display=Vendor_DLKM
+vendor_dlkm           /vendor_dlkm   ext4     ro,barrier=1    wait,avb=vbmeta_system_ext,logical,first_stage_mount,slotselect,display=Vendor_DLKM
+system_dlkm           /system_dlkm   erofs    ro              wait,avb=vbmeta_system_ext,logical,first_stage_mount,slotselect,display=System_DLKM
+system_dlkm           /system_dlkm   ext4     ro,barrier=1    wait,avb=vbmeta_system_ext,logical,first_stage_mount,slotselect,display=System_DLKM
+
+# --- data ---
+/dev/block/by-name/metadata        /metadata      f2fs      nodev,noatime,nosuid                      wait,formattable,first_stage_mount,check,display=Metadata
+/dev/block/by-name/metadata        /metadata      ext4      nodev,noatime,nosuid,errors=panic         wait,formattable,first_stage_mount,check,display=Metadata
+/dev/block/by-name/userdata        /data          f2fs      noatime,nosuid,nodev,discard,reserve_root=32768,resgid=1065,inline_xattr,inline_data,inlinecrypt,fsync_mode=nobarrier,atgc   latemount,wait,quota,check,fileencryption=aes-256-xts:aes-256-cts:v2+inlinecrypt_optimized,keydirectory=/metadata/vold/metadata_encryption,reservedsize=128M,checkpoint=fs,formattable,display=Data
+/dev/block/by-name/cache           /cache         f2fs      noatime,nosuid,nodev,discard              wait,check,formattable,display=Cache
+/dev/block/by-name/cache           /cache         ext4      noatime,nosuid,nodev,nomblk_io_submit,noauto_da_alloc   wait,check,formattable,display=Cache
+/dev/block/by-name/prodnv          /mnt/vendor    ext4      noatime,nosuid,nodev,nomblk_io_submit,noauto_da_alloc   wait,check,display=Vendor_NV
+/dev/block/by-name/my_preload      /my_preload    ext4      noatime,nosuid,nodev,nomblk_io_submit,noauto_da_alloc   wait,check,nofail,display=My_Preload
+/dev/block/by-name/opporeserve     /mnt/vendor/opporeserve   ext4   noatime,nosuid,nodev,nomblk_io_submit,noauto_da_alloc   wait,check,formattable,display=OpoReserve
+/dev/block/by-name/blackbox        /blackbox      f2fs      noatime,nosuid,nodev,discard              check,display=Blackbox
+/dev/block/by-name/blackbox        /blackbox      ext4      noatime,nosuid,nodev,nomblk_io_submit,noauto_da_alloc   check,display=Blackbox
+
+# --- removable storage ---
+/devices/platform/soc/soc:*/*.usb/musb-hdrc.*.auto/usb*    auto    vfat   defaults   storage,removable,wipeingui,display=USB_Storage
+/devices/platform/soc/soc:ap-*/*.sdio/mmc_host/mmc1/mmc1:*/block/mmcblk1   auto   vfat   defaults   storage,removable,wipeingui,display=SD_Card

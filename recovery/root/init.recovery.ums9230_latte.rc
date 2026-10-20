@@ -1,0 +1,12 @@
+# SPDX-FileCopyrightText: 2016-2023 Unisoc (Shanghai) Technologies Co., Ltd
+# SPDX-License-Identifier: LicenseRef-Unisoc-General-1.0
+#
+# Device specific init for realme Note 60 (RMX3933) - Unisoc T612 / ums9230_latte
+
+on early-init
+    write /sys/fs/selinux/enforce 0
+
+on fs
+    setprop crypto.ready 1
+
+import /init.recovery.common.rc

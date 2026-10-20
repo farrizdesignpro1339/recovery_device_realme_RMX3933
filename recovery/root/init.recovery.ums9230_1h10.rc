@@ -1,0 +1,5 @@
+# Device specific init for realme Note 60 (RMX3933) - Unisoc T612 / ums9230_1h10
+# Some ROMs report the SoC variant instead of the board name in ro.hardware,
+# so both files are provided and only the matching one gets loaded.
+
+import /init.recovery.ums9230_latte.rc

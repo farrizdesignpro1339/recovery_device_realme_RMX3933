@@ -1,0 +1,135 @@
+# SPDX-FileCopyrightText: 2016-2023 Unisoc (Shanghai) Technologies Co., Ltd
+# SPDX-License-Identifier: LicenseRef-Unisoc-General-1.0
+
+#
+## Please include it in /init.recovery.${ro.hardware}.rc
+#
+
+service healthd /system/bin/healthd -r
+    critical
+    seclabel u:r:healthd:s0
+
+service create_splloader_dual_slot_byname_path /system/bin/create_splloader_dual_slot_byname_path.sh
+    user root
+    group root system
+    disabled
+    oneshot
+    seclabel u:r:create_spl_link_recovery:s0
+
+service vendor.mlogservice /vendor/bin/mlogservice
+    class main
+    user shell
+    group system root
+
+
+on init
+    # Apply strict SELinux checking of PROT_EXEC on mmap/mprotect calls.
+    write /sys/fs/selinux/checkreqprot 0
+    start healthd
+    start create_splloader_dual_slot_byname_path
+
+    export PATH /sbin:/system/bin:/vendor/bin
+    export SECONDARY_STORAGE /storage/sdcard0
+
+    mkdir /storage
+    mkdir /storage/sdcard1
+    mkdir /storage/sdcard0
+    symlink /storage/sdcard0 /mnt/sdcard
+    symlink /system/etc/bluetooth /etc/bluetooth
+
+    mkdir /systeminfo 0777 system system
+
+    loglevel 7
+
+    chown system root /proc/mdbg/assert
+    chown system root /proc/mdbg/wdtirq
+    chown system root /proc/mdbg/at_cmd
+    chown system root /proc/mdbg/loopcheck
+
+    chmod 760 /proc/mdbg/assert
+    chmod 760 /proc/mdbg/wdtirq
+    chmod 760 /proc/mdbg/at_cmd
+    chmod 760 /proc/mdbg/loopcheck
+
+    chown system root /proc/cpwcn/wdtirq
+    chmod 766 /proc/cpwcn/wdtirq
+
+    # USB gadget setup is handled by init.recovery.usb.rc (TWRP style)
+
+on boot
+    setprop sys.usb.configfs 1
+    write /sys/block/mmcblk0boot0/force_ro 0
+    write /sys/block/mmcblk0boot1/force_ro 0
+
+    chmod 660 /sys/class/power_supply/battery/charger.0/stop_charge
+    chmod 660 /sys/class/power_supply/battery/charger.0/jeita_control
+    chmod 660 /sys/class/power_supply/battery/input_current_limit
+    chmod 660 /sys/class/power_supply/battery/constant_charge_current
+    chmod 660 /sys/class/power_supply/battery/charger.0/keep_awake
+
+on fs
+    #mkdir /data/misc/bluedroid 0770 bluetooth net_bt_stack
+    mkdir /data/misc/bluetooth 0770 system system
+
+on post-fs-data
+    # We chown/chmod /data again so because mount is run as root + defaults
+    chown system system /data
+    chmod 0771 /data
+    # We restorecon /data in case the userdata partition has been reset.
+    restorecon /data
+    mkdir /data/misc 01771 system misc
+    #mkdir /data/misc/bluedroid 0770 bluetooth net_bt_stack
+    mkdir /data/misc/bluetooth 0770 system system
+    copy /system/etc/bluetooth/bt_stack.conf /data/misc/bluedroid/bt_stack.conf
+    chown bluetooth system /data/misc/bluedroid/bt_stack.conf
+    chmod 0640 /data/misc/bluedroid/bt_stack.conf
+
+    #add wifi
+    mkdir /data/vendor/wifi 0770 wifi wifi
+    mkdir /data/vendor/wifi/wpa 0770 wifi wifi
+    mkdir /data/vendor/wifi/wpa/sockets 0770 wifi wifi
+    mkdir /data/system 0770 system system
+    mkdir /etc/wifi 0770 wifi wifi
+    write /data/vendor/wifi/fwpath sta_mode
+    chmod 660 /data/vendor/wifi/fwpath
+    chown wifi wifi /data/vendor/wifi/fwpath
+    rmdir /data/system/wpa_supplicant
+    mkdir /data/misc/dhcp 0770 dhcp dhcp
+
+    #to observe dnsmasq.leases file for dhcp information
+    chown dhcp system /data/misc/dhcp
+    setprop wifi.interface wlan0
+    mkdir /data/misc/dhcp6c 0770 dhcp dhcp
+    chown dhcp system /data/misc/dhcp6c
+
+    # Ylog dir on /data partition
+    mkdir /data/vendor 0751 root root
+    mkdir /data/vendor/local 0751 root root
+
+    # slogmodem config dir
+    mkdir /data/vendor/ylog 0770 shell system
+    mkdir /data/vendor/local/slogmodem 0770 shell system
+    mkdir /data/vendor/local/mlogservice 0770 shell system
+    mkdir /mnt/vendor/productinfo 0771 system root
+    mkdir /data/vendor/local/otpdata 0777 system root
+
+on property:ro.debuggable=1
+    write /sys/module/smsg/parameters/debug_enable 1
+
+on property:ro.bootmode=recovery
+    class_start recovery
+
+# USB gadget is set up by init.recovery.usb.rc
+
+# for grf
+
+
+on property:ro.odm.build.fingerprint=*
+    setprop ro.vendor.build.fingerprint ${ro.odm.build.fingerprint}
+
+on property:ro.product.device=*
+    setprop ro.product.vendor.device ${ro.product.device}
+on property:ro.product.model=*
+    setprop ro.product.vendor.model ${ro.product.model}
+on property:ro.product.name=*
+    setprop ro.product.vendor.name ${ro.product.name}
